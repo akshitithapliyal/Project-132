@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <title>Project 131 - Garden</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <style>
+            a{
+                color:cornflowerblue;
+                background-color:cornsilk;
+                width:400px;
+                font-size:large;
+                border-radius:30%;
+            }
+            .heading{
+font-size: 23px;
+width: 100%;
+margin: 0px;
+}
+
+#status
+{
+font-size: 18px;
+}
+
+canvas
+{
+box-shadow: 10px 10px 10px grey;
+border-radius: 10px;
+margin-top: 60px;
+}
+a
+{
+  float:right;
+  margin: 5px;
+  cursor: pointer;
+}
+a:hover
+{
+  color:red !important;
+}
+        </style>
+    </head>
+<body>
+    <center>
+        <h1 class="btn btn-success heading">Object Detection</h1>
+        <a href="index.html" class="btn">Home</a>
+        <br><br>
+        <h3 id="status" class="btn btn-primary"></h3>
+        <br>
+        <h3 class="btn btn-info">There are 2 big objects in the bedroom image from which cocossd model has detected only 1 correctly</h3>
+    </center>
+    <script>
+img="";
+object=[];
+status="";
+
+function preload(){
+    img = loadImage('garden.jpeg');
+}
+
+function setup(){
+    canvas = createCanvas(640, 420);
+    canvas.center();
+    objectDetector = ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML = "Status : Detecting Objects";
+}
+
+function modelLoaded(){
+    console.log("model is loaded and starting");
+    status=true;
+    objectDetector.detect(img, gotresults);
+}
+
+function gotresults(error, results){
+    if(error){
+        console.log(error);
+    }
+    console.log(results);
+    object=results;
+}
+
+function draw(){
+    image(img, 0, 0, 640, 420);
+    if(status!=""){
+for(i=0;i<object.length;i++){
+    document.getElementById("status").innerHTML = "Status : Detected Objects";
+    fill(130, 200, 40);
+    percent=floor(object[i].confidence*100);
+    text(object[i].label+" "+percent+" %",object[i].x+15,object[i].y+15);
+    noFill();
+    stroke(230, 99, 100);
+    rect(object[i].x,object[i].y,object[i].width,object[i].height);
+}
+}
+}
+    </script>
+</body>
+</html>
